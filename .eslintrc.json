@@ -1,0 +1,33 @@
+{
+    "extends": [
+      "eslint:recommended",
+      "plugin:@typescript-eslint/recommended",
+      "airbnb-base",
+      "plugin:prettier/recommended"
+    ],
+    "parser": "@typescript-eslint/parser",
+    "plugins": ["@typescript-eslint", "prettier"],
+    "ignorePatterns": ["dist/**"],
+    "rules": {
+      "prettier/prettier": "error",
+      "@typescript-eslint/indent": [
+        "error",
+        4,
+        {
+          // attempt to fix Decorator issue, see https://github.com/typescript-eslint/typescript-eslint/issues/1824#issuecomment-957559729
+          "ignoredNodes": [
+            "FunctionExpression > .params[decorators.length > 0]",
+            "FunctionExpression > .params > :matches(Decorator, :not(:first-child))",
+            "ClassBody.body > PropertyDefinition[decorators.length > 0] > .key"
+          ]
+        }
+      ],  
+      "@typescript-eslint/no-unused-vars": "error",
+      "@typescript-eslint/no-explicit-any": "error",
+      "import/prefer-default-export": 0,
+      "import/extensions": 0,
+      "import/no-unresolved": 0,
+      "class-methods-use-this": 0
+    }
+  }
+  
