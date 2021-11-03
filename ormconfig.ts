@@ -1,7 +1,6 @@
-
 import * as fs from 'fs';
 
-module.exports = {
+export = {
     "name": "default",
     "type": "cockroachdb",
     "host": "free-tier.gcp-us-central1.cockroachlabs.cloud",

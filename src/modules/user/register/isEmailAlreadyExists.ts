@@ -7,7 +7,7 @@ import {
 import { User } from '../../../entity/User';
 
 @ValidatorConstraint({ async: true })
-/* eslint-disable */
+/* eslint-disable-next-line */
 export class IsEmailAlreadyExistConstraint implements ValidatorConstraintInterface
 {
     validate(email: string) {
@@ -21,7 +21,8 @@ export class IsEmailAlreadyExistConstraint implements ValidatorConstraintInterfa
 }
 
 export function IsEmailAlreadyExist(validationOptions?: ValidationOptions) {
-    return (object: Record<string, unknown>, propertyName: string) => {
+    /* eslint-disable-next-line */
+    return (object: Object, propertyName: string) => {
         registerDecorator({
             target: object.constructor,
             propertyName,

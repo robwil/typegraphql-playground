@@ -3,7 +3,7 @@ import bcrypt from 'bcryptjs';
 import { User } from '../../entity/User';
 import { RegisterInput } from './register/RegisterInput';
 
-@Resolver(User)
+@Resolver()
 export class RegisterResolver {
     // dummy query to appease GraphQL for now
     @Query(() => String, { name: 'helloWorld' })

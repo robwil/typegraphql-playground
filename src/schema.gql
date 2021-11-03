@@ -4,6 +4,7 @@
 # -----------------------------------------------
 
 type Mutation {
+  login(email: String!, password: String!): User
   register(data: RegisterInput!): User!
 }
 
