@@ -14,9 +14,9 @@ const main = async () => {
         resolvers: [RegisterResolver],
         // automatically create `schema.gql` file with schema definition in current folder
         emitSchemaFile: path.resolve(__dirname, "schema.gql"),
-    })
+    });
     const server = new ApolloServer({
-        schema
+        schema,
     });
     const { url } = await server.listen(4000);
     console.log(`Server is running, GraphQL playground available at ${url}`);
