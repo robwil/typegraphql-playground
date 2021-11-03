@@ -3,6 +3,18 @@
 # !!!   DO NOT MODIFY THIS FILE BY YOURSELF   !!!
 # -----------------------------------------------
 
+type Mutation {
+  register(email: String!, firstName: String!, lastName: String!, password: String!): User!
+}
+
 type Query {
   helloWorld: String!
+}
+
+type User {
+  email: String!
+  firstName: String!
+  id: ID!
+  lastName: String!
+  name: String!
 }

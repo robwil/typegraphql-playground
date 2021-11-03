@@ -1,19 +1,17 @@
 import 'reflect-metadata';
 import * as path from 'path';
 import { ApolloServer } from 'apollo-server';
-import { buildSchema, Query, Resolver } from 'type-graphql';
-
-@Resolver(String)
-class HelloResolver {
-    @Query(() => String, {name: 'helloWorld'})
-    async hello() {
-        return "Hello world";
-    }
-}
+import { buildSchema } from 'type-graphql';
+import { createConnection } from 'typeorm';
+import { RegisterResolver } from './modules/user/Register';
 
 const main = async () => {
+    require('dotenv').config();
+
+    await createConnection();
+
     const schema = await buildSchema({
-        resolvers: [HelloResolver],
+        resolvers: [RegisterResolver],
         // automatically create `schema.gql` file with schema definition in current folder
         emitSchemaFile: path.resolve(__dirname, "schema.gql"),
     })
