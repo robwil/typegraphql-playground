@@ -19,7 +19,6 @@ export class LoginResolver {
         if (!valid) {
             return null;
         }
-        // @ts-ignore TS doesn't know about SessionData
         ctx.req.session.userId = user.id;
         return user;
     }

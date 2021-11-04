@@ -11,9 +11,12 @@ import { Connection, createConnection } from 'typeorm';
 import session from 'express-session';
 import connectPgSimple from 'connect-pg-simple';
 import cors from 'cors';
-import { RegisterResolver } from './modules/user/Register';
-import { LoginResolver } from './modules/user/Login';
-import { MeResolver } from './modules/user/Me';
+
+declare module 'express-session' {
+    export interface SessionData {
+        userId: number;
+    }
+}
 
 // simple function to derive PG connection string from TypeORM connection,
 // so we don't have to repeat ourselves for config
@@ -27,13 +30,20 @@ function extractConnectionStringFromTypeOrmConnection(
 
 const main = async () => {
     dotenv.config();
-    const conn = await createConnection();
+    const pgConnection = await createConnection();
 
     const app = express();
     const httpServer = http.createServer(app);
     const server = new ApolloServer({
         schema: await buildSchema({
-            resolvers: [MeResolver, RegisterResolver, LoginResolver],
+            resolvers: [`${__dirname}/modules/**/*.ts`],
+            authChecker: ({ context }) => {
+                // for now, our @Authorized() annotation doesn't look at roles and just checks for logged in user
+                if (context.req.session.userId) {
+                    return true;
+                }
+                return false;
+            },
             // automatically create `schema.gql` file with schema definition in current folder
             emitSchemaFile: path.resolve(__dirname, 'schema.gql'),
         }),
@@ -50,7 +60,7 @@ const main = async () => {
             tableName: 'session',
             conObject: {
                 connectionString:
-                    extractConnectionStringFromTypeOrmConnection(conn),
+                    extractConnectionStringFromTypeOrmConnection(pgConnection),
                 ssl: { ca: fs.readFileSync('certs/cockroach.crt').toString() },
             },
         }),

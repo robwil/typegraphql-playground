@@ -9,7 +9,8 @@ type Mutation {
 }
 
 type Query {
-  helloWorld: String!
+  hello: String!
+  helloMiddleware: String!
   me: User
 }
 
