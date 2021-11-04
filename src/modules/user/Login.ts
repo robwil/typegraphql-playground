@@ -19,7 +19,6 @@ export class LoginResolver {
         if (!valid) {
             return null;
         }
-        // NOTE: For some reason, setting this breaks responses. It causes the response to hang forever open.
         // @ts-ignore TS doesn't know about SessionData
         ctx.req.session.userId = user.id;
         return user;

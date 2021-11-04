@@ -9,11 +9,11 @@ import http from 'http';
 import { buildSchema } from 'type-graphql';
 import { Connection, createConnection } from 'typeorm';
 import session from 'express-session';
-// @ts-ignore doesn't have @types file and I don't care to make one
-import connectCockroachSimple from 'connect-cockroachdb-simple';
+import connectPgSimple from 'connect-pg-simple';
 import cors from 'cors';
 import { RegisterResolver } from './modules/user/Register';
 import { LoginResolver } from './modules/user/Login';
+import { MeResolver } from './modules/user/Me';
 
 // simple function to derive PG connection string from TypeORM connection,
 // so we don't have to repeat ourselves for config
@@ -33,7 +33,7 @@ const main = async () => {
     const httpServer = http.createServer(app);
     const server = new ApolloServer({
         schema: await buildSchema({
-            resolvers: [RegisterResolver, LoginResolver],
+            resolvers: [MeResolver, RegisterResolver, LoginResolver],
             // automatically create `schema.gql` file with schema definition in current folder
             emitSchemaFile: path.resolve(__dirname, 'schema.gql'),
         }),
@@ -44,9 +44,9 @@ const main = async () => {
     });
     await server.start();
 
-    const CockroachSession = connectCockroachSimple(session);
+    const PgSession = connectPgSimple(session);
     const sessionOption: session.SessionOptions = {
-        store: new CockroachSession({
+        store: new PgSession({
             tableName: 'session',
             conObject: {
                 connectionString:
@@ -60,7 +60,6 @@ const main = async () => {
         saveUninitialized: false,
         cookie: {
             httpOnly: true,
-            sameSite: 'none',
             secure: process.env.NODE_ENV === 'production',
             maxAge: 1000 * 60 * 60 * 24 * 7 * 365, // 7 years
         },
