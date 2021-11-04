@@ -1,6 +1,5 @@
 import 'reflect-metadata';
 import fs from 'fs';
-import path from 'path';
 import dotenv from 'dotenv';
 import { ApolloServer } from 'apollo-server-express';
 import {
@@ -9,11 +8,11 @@ import {
 } from 'apollo-server-core';
 import express from 'express';
 import http from 'http';
-import { buildSchema } from 'type-graphql';
 import { Connection, createConnection } from 'typeorm';
 import session from 'express-session';
 import connectPgSimple from 'connect-pg-simple';
 import cors from 'cors';
+import { createGraphqlSchema } from './utils/createGraphqlSchema';
 
 declare module 'express-session' {
     export interface SessionData {
@@ -38,18 +37,7 @@ const main = async () => {
     const app = express();
     const httpServer = http.createServer(app);
     const server = new ApolloServer({
-        schema: await buildSchema({
-            resolvers: [`${__dirname}/modules/**/*.ts`],
-            authChecker: ({ context }) => {
-                // for now, our @Authorized() annotation doesn't look at roles and just checks for logged in user
-                if (context.req.session.userId) {
-                    return true;
-                }
-                return false;
-            },
-            // automatically create `schema.gql` file with schema definition in current folder
-            emitSchemaFile: path.resolve(__dirname, 'schema.gql'),
-        }),
+        schema: await createGraphqlSchema(),
         plugins: [
             ApolloServerPluginDrainHttpServer({ httpServer }),
             // use GraphQL playground instead of Apollo Studio

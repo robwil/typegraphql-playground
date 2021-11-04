@@ -29,6 +29,26 @@ yarn install
 yarn start
 ```
 
+## Tests
+
+To run the tests, it assumes there is a local CockroachDB cluster running. This can be done using:
+
+```
+cockroach start \
+--insecure \
+--store=test/cockroachdb \
+--listen-addr=localhost:26257 \
+--http-addr=localhost:8080 \
+--join=localhost:26257
+```
+
+One-time setup is needed:
+
+```
+cockroach init --insecure --host=localhost:26257
+cockroach sql --insecure --host=localhost:26257 --execute 'create database typegraphql_example_test;'
+```
+
 ## Configuration notes
 
 The real database password is stored in `.env`, which is not in version control.
