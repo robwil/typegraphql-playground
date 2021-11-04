@@ -3,7 +3,10 @@ import fs from 'fs';
 import path from 'path';
 import dotenv from 'dotenv';
 import { ApolloServer } from 'apollo-server-express';
-import { ApolloServerPluginDrainHttpServer } from 'apollo-server-core';
+import {
+    ApolloServerPluginDrainHttpServer,
+    ApolloServerPluginLandingPageGraphQLPlayground,
+} from 'apollo-server-core';
 import express from 'express';
 import http from 'http';
 import { buildSchema } from 'type-graphql';
@@ -47,10 +50,15 @@ const main = async () => {
             // automatically create `schema.gql` file with schema definition in current folder
             emitSchemaFile: path.resolve(__dirname, 'schema.gql'),
         }),
-        plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
-        // pass Express request to Apollo/GraphQL resolvers
+        plugins: [
+            ApolloServerPluginDrainHttpServer({ httpServer }),
+            // use GraphQL playground instead of Apollo Studio
+            // because it works a lot better with session cookies
+            ApolloServerPluginLandingPageGraphQLPlayground(),
+        ],
+        // pass Express request and response to Apollo/GraphQL resolvers
         /* eslint-disable-next-line */
-        context: ({ req }: any) => ({ req }),
+        context: ({ req, res }: any) => ({ req, res }),
     });
     await server.start();
 
@@ -70,14 +78,15 @@ const main = async () => {
         saveUninitialized: false,
         cookie: {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
+            secure: false,
             maxAge: 1000 * 60 * 60 * 24 * 7 * 365, // 7 years
         },
     };
     app.use(
         cors({
             credentials: true,
-            origin: 'https://studio.apollographql.com',
+            // origin of what would eventually be the frontend
+            origin: 'http://localhost:3000',
         })
     );
     app.use(session(sessionOption));
